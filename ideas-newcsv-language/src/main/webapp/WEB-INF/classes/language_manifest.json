@@ -1,0 +1,93 @@
+{
+    "id": "ideas-sample-language",
+    "extension": "csv",
+    "name": "CSV",
+    "formats": [
+        {
+            "format": "sample_format",
+            "editorModeId": "ace/mode/sample",
+            "_editorModeURI": "mode-sample.js",
+            "editorThemeId": "ace/theme/sample",
+            "_editorThemeURI": "theme-sample.js",
+            "checkLanguage": "false"
+        }
+    ],
+    "operations": [
+        {
+            "id": "csv",
+            "name": "Convert to Handsontable",
+            "data": {},
+            "_remoteExecution": "true",
+            "action": "function(operation, fileUri, result) {console.log(result);}"
+        }
+
+    ],
+    "templateProjects": null,
+    "templateFiles": null,
+    "inspectorLoader": "function(loader, format) {
+    	$('#editorToggleInspector').addClass('hdd');
+		EditorManager.showInspector();
+		$('#editorInspector').css({ 'width':'850px' });
+		$('#editorInspector').css('max-width', '');
+		$('#editorMainPanel').width($(window).width() - $('#editorSidePanel').width() - $('#editorInspector').width());
+		$('#editorMainPanel').css('right', $('#editorInspector').width() + 'px');
+		
+		
+		
+		var content = EditorManager.getCurrentEditorContent();
+    	var lines = content.split('\\n');
+    	var array = [[]];
+    	
+    	for(i = 0; i<lines.length;i++){
+    		array[i] = lines[i].split(',');
+    	}
+    	
+    	var container = document.getElementById('editorInspectorLoader');
+    	var divHoT = document.createElement('div');
+    	divHoT.id = 'divHoT';
+    	container.appendChild(divHoT);
+    	
+		var hot = new Handsontable(divHoT, {
+		  data: array,
+		  rowHeaders: true,
+		  colHeaders: true
+		});
+		
+		$('.handsontable th').css('height', '22px');
+		$('#divHoT').css('margin','0px 0px 50px 100px');
+		$('#editorInspectorLoader').css('overflow','auto');
+		
+		
+		var divButtonHoT = document.createElement('div');
+		divButtonHoT.id = 'divButtonHoT';
+		container.appendChild(divButtonHoT);
+		
+		var buttonHoT = document.createElement('input');
+		buttonHoT.type = 'button';
+		buttonHoT.id = 'buttonHoT';
+		buttonHoT.value = 'Save';
+		divButtonHoT.appendChild(buttonHoT);
+		
+		$('#divButtonHoT').css('position','absolute');
+		$('#divButtonHoT').css('top','53px');
+		$('#divButtonHoT').css('left','25px');
+		
+		buttonHoT.onclick = function(){
+			var handsontableArray = hot.getData();
+			var handsontableContent = '';
+			
+			for (i = 0; i < handsontableArray.length; ++i){
+				for (j = 0; j < handsontableArray[i].length; ++j)
+			   		if (j == handsontableArray[i].length - 1)
+			      		handsontableContent = handsontableContent + handsontableArray[i][j];
+			    	else
+			      		handsontableContent = handsontableContent + handsontableArray[i][j] + ',';
+			    handsontableContent = handsontableContent + '\\n';
+			}
+			console.log(handsontableContent);
+			
+			EditorManager.saveFile(EditorManager.getCurrentUri(),handsontableContent,function(){EditorManager.setCurrentEditorContent(handsontableContent);console.log('Guardado')});
+		};
+    }",
+    "helpURI": "/views/help/index.jsp"
+}
